@@ -1,13 +1,12 @@
 import Web3 from "web3";
 import ABI from 'contracts/StatusContract.json';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 
 const EventCard = ({ feed }) => {
-
+    const [events, setEvents] = useState([]);
     let provider = window.ethereum;
     let selectedAccount;
-
     const eventName = "StatusUpdated";
     const web3 = new Web3(provider);
 
@@ -22,23 +21,38 @@ const EventCard = ({ feed }) => {
         })
         .catch(error => { console.log(error); });
 
-    const getEvents = async () =>{ 
-
-    const events = await contract.getPastEvents(eventName, {
-        filter: {},
-        fromBlock: 1747337,
-        toBlock: "latest",
-    });
-        console.log(events);
-
-    }
-
     useEffect(() => {
-        getEvents();
+        const getEvents = async (contract, selectedAccount) => {
+            try {
+                let events = await contract.getPastEvents(eventName, {
+                    filter: {},
+                    fromBlock: 1747337,
+                    toBlock: "latest"
+                });
+                let display = events.reverse();
+                setEvents(display);
+                console.log(display);
+            } catch (error) {
+                console.log(error);
+            }
+            // setList(events);
+        }
+        getEvents(contract, selectedAccount);
     }, []);
 
     return (
-        <p>{ feed }</p>
+        <>
+            <p className="last">{feed}</p>
+            <ul className="list">
+                {events.map(function (data, index) {
+                    return (
+                        <li key={index}>
+                            {data.returnValues[1]}<span className="date">{ data.blockNumber.toString() }</span>
+                        </li>
+                    )
+                })}
+            </ul>
+        </>
         )
 }
 export default EventCard;

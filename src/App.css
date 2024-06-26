@@ -33,7 +33,7 @@
   min-height: 4em;
 }
 
-.alert {
+.alert, .date {
     width: 10%;
     background: rgba(200, 0, 0, .5);
     padding: 1em;
@@ -44,7 +44,8 @@
     color: red;
 }
 
-.timeline > p {
+.timeline > p.last {
+    visibility: hidden;
     background-color: darkolivegreen;
     border-radius: 5px;
     border: 1px solid darkslategrey;
@@ -52,6 +53,29 @@
     margin: 0 auto;
     padding: .5em 1em;
     margin-top: 1em;
+}
+
+.list {
+    width: 50%;
+    margin: 0 auto;
+    padding: 1em;
+    list-style: none;
+    color: #111;
+}
+
+    .list > li {
+        padding: 1em .5em;
+        border: 1px solid darkgrey;
+        border-radius: 1em;
+        margin: 1em auto;
+        background-color: darkslategray;
+    }
+.date {
+    position: relative;
+    right: 0%;
+    margin-right: 0;
+    display: flex;
+    margin-top: -1em;
 }
 
 @keyframes App-logo-spin {

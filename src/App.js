@@ -2,25 +2,26 @@ import logo from './logo400.png';
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import ABI from 'contracts/StatusContract.json';
-import { init1, setStatus } from './Web3Set';
+import { set, setStatus } from './Web3Set';
 import EventCard from './EventCard';
 import './App.css';
 
 function App() {
-    const [status, foundStatus] = useState(false);
+    const [status, foundStatus] = useState('');
     const [feed, setFeed] = useState('');
     const [newStatus, setNewStatus] = useState('');
     const [account, setAccount] = useState('');
+    const [contract, setContract] = useState({});
 
     // let timeline;
 
     let selectedAccount;
 
-    let contract;
+    let provider;
 
     const init = async () => {
 
-        const providerUrl = process.env.INFURA_RPC;
+        // const providerUrl = process.env.INFURA_RPC;
 
         let provider = window.ethereum;
 
@@ -32,7 +33,7 @@ function App() {
                 .then(accounts => {
                     selectedAccount = accounts[0];
                     setAccount(selectedAccount);
-                    // console.log(`Selected account is: ${selectedAccount}`);
+                    console.log(`Selected account is: ${selectedAccount}`);
                 })
                 .catch(error => { console.log(error); });
 
@@ -109,35 +110,51 @@ function App() {
 
             const contractAddress = "0xEa081e46f5e3B9f240B1EB71E6b76622DB38a7B6";
 
-            contract = new web3.eth.Contract(ABI.abi, contractAddress);
+            let contract = new web3.eth.Contract(ABI.abi, contractAddress);
+
+            setContract(contract);
 
         };
 
     };
 
-    const callStatuses = async () => {
-        let newFeed = await contract.methods.statuses(selectedAccount).call();
-        setFeed(newFeed);
-        console.log(newFeed);
+    const isValidAddress = (adr) => {
+        try {
+            const web3 = new Web3()
+            web3.utils.toChecksumAddress(adr)
+            return true
+        } catch (e) {
+            return false
+        }
     }
 
-    const getStatus = async () => {
-        // let timeline = await contract.methods.getStatus(selectedAccount).call();
-        // setFeed(timeline);
-         callStatuses();
+    const getStatus = async (contract, account) => {
+
+        let isValid = await isValidAddress(account);
+        if (isValid) {
+            try {
+                let timeline = await contract.methods.getStatus(account).call();
+                setFeed(timeline);
+                let previous = await contract.methods.statuses(account).call();
+                foundStatus(previous);
+            } catch (error) {
+                console.log(error);
+                return error;
+            }
+        }
     };
 
     useEffect(() => {
-        init();
-        init1();
+        set(provider);
     }, []);
 
   return (
-    <div className="App">
+      <div className="App">
+          { account.length > 1 ? <>
       <header className="App-header">
               <img src={logo} className="App-logo" alt="logo" />
               <br /><br />
-              {!status ? <button onClick={() => getStatus()}>Get Status</button> : ""}
+                  <button onClick={() => getStatus(contract, account)}>Get Status</button>
        </header>
           <textarea
               className="App-status"
@@ -148,11 +165,16 @@ function App() {
               placeholder="Enter your status (less than 140 characters)"
           />
           <br /><br />
-          {!newStatus ? <button onClick={() => setStatus(newStatus)} disabled>Set Status</button> : <button onClick={() => setStatus(newStatus)} >Set Status</button>}
+              {!newStatus ? <button onClick={() => setStatus(newStatus, account)} disabled>Set Status</button> : <button onClick={() => setStatus(newStatus, account)}>Set Status</button>}
 
-          {!feed ? <div className="alert">Click "Get Status"</div> : <div className="timeline"><EventCard feed={feed} address={ account } /></div>}
+              {!feed ? <div className="alert">Click "Get Status"</div> : <div className="timeline"><EventCard feed={feed} address={account} /></div>}
+          </> : <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <br /><br />
+        <button onClick={() => init()}>Connect</button>
+    </header>}
     </div>
   );
-}
+};
 
 export default App;

@@ -1,39 +1,15 @@
 import Web3 from "web3";
 import ABI from 'contracts/StatusContract.json';
 
-let selectedAccount;
-
 let contract;
 
-export const init1 = async () => {
-
-    const providerUrl = process.env.INFURA_RPC;
-
-    let provider = window.ethereum;
-
-    if (typeof provider !== 'undefined') {
-
-        // metamask is installed
-
-        provider.request({ method: 'eth_requestAccounts' })
-            .then(accounts => {
-                selectedAccount = accounts[0];
-                console.log(`Selected account is: ${selectedAccount}`);
-            })
-            .catch(error => { console.log(error); });
-
-        window.ethereum.on('accountsChanged', function (accounts) {
-            selectedAccount = accounts[0];
-            console.log(`Selected account is: ${selectedAccount}`);
-        });
+export const set = async (provider) => {
 
         const web3 = new Web3(provider);
 
         const contractAddress ="0xEa081e46f5e3B9f240B1EB71E6b76622DB38a7B6";
 
-        contract = new web3.eth.Contract(ABI.abi, contractAddress);
-
-        };   
+    contract = new web3.eth.Contract(ABI.abi, contractAddress);
 
     };
 
@@ -47,11 +23,14 @@ const isValidAddress = (adr) => {
     }
 }
 
-export const setStatus = async (newStatus) => {
-    let isValid = await isValidAddress(selectedAccount);
+export const setStatus = async (newStatus, account) => {
+    let isValid = await isValidAddress(account);
     if (isValid) {
         try {
-            await contract.methods.setStatus(newStatus).send({ from: selectedAccount });
+            const web3 = new Web3(window.ethereum);
+            const contractAddress = "0xEa081e46f5e3B9f240B1EB71E6b76622DB38a7B6";
+            contract = new web3.eth.Contract(ABI.abi, contractAddress);
+            await contract.methods.setStatus(newStatus).send({ from: account });
             console.log(newStatus)
         } catch (error) {
             console.log(error);
