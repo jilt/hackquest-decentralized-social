@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import ABI from 'contracts/StatusContract.json';
+import ABI from './contracts/StatusContract.json';
 import React, { useEffect, useState } from "react";
 
 
@@ -21,8 +21,16 @@ const EventCard = ({ feed }) => {
         })
         .catch(error => { console.log(error); });
 
+    const convertDate = async (date) => {
+        try {
+            let converted = new Date(date);
+            const update = converted.toISOstring();
+            console.log(update);
+        } catch (error) { console.log(error); }
+    }
+
     useEffect(() => {
-        const getEvents = async (contract, selectedAccount) => {
+        const getEvents = async (contract) => {
             try {
                 let events = await contract.getPastEvents(eventName, {
                     filter: {},
@@ -47,7 +55,7 @@ const EventCard = ({ feed }) => {
                 {events.map(function (data, index) {
                     return (
                         <li key={index}>
-                            {data.returnValues[1]}<span className="date">{ data.blockNumber.toString() }</span>
+                            {data.returnValues[1]}<span className="date">{ () => convertDate(data.blockNumber) }</span>
                         </li>
                     )
                 })}
