@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import ABI from 'contracts/StatusContract.json';
+import ABI from './contracts/StatusContract.json';
 
 let contract;
 
