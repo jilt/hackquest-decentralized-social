@@ -1,7 +1,7 @@
 import logo from './logo400.png';
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import ABI from 'contracts/StatusContract.json';
+import ABI from './contracts/StatusContract.json';
 import { set, setStatus } from './Web3Set';
 import EventCard from './EventCard';
 import './App.css';
