@@ -12,4 +12,5 @@ A web3 repository for the decentralized social contract from hackquest on Linea 
 3) UX restyle
 
 ## date utilities
-1) https://medium.com/@BokkyPooBah/bokkypoobahs-gas-efficient-solidity-datetime-library-92bf96d9b2da
+1) smart contracts https://medium.com/@BokkyPooBah/bokkypoobahs-gas-efficient-solidity-datetime-library-92bf96d9b2da
+2) JavaScript https://stackoverflow.com/questions/5416920/timestamp-to-human-readable-format
